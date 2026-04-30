@@ -1,0 +1,27 @@
+# Environment files
+.env
+.env.*
+
+# Virtual environments
+.venv/
+venv/
+env/
+
+# Python cache/build artifacts
+__pycache__/
+*.py[cod]
+*.pyd
+*.so
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+build/
+dist/
+
+# Local uploaded/processed data
+data/raw/
+data/processed/
+data/uploads/
+
+# Local vector store / index artifacts
+db/faiss_index/

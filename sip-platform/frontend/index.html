@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SIP Platform - RAG Frontend</title>
+  <link rel="icon" href="data:;base64,"> <!-- no-op favicon to prevent 404 -->
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <main class="container">
+    <h1>SIP RAG Demo</h1>
+    <p>Enter a question and get an answer from the RAG backend.</p>
+
+    <div class="input-group">
+      <label for="question">Question</label>
+      <textarea id="question" rows="4" placeholder="Ask something about the loaded documents..."></textarea>
+    </div>
+
+    <button id="askBtn">Ask</button>
+    <div id="status" class="status"></div>
+    <div id="result" class="result"></div>
+  </main>
+
+  <script src="app.js"></script>
+</body>
+</html>
