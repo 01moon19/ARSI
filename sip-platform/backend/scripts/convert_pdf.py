@@ -1,8 +1,10 @@
 import fitz  # pymupdf
 import os
 
-RAW_FOLDER = "data/raw"
-PROCESSED_FOLDER = "data/processed"
+from app.core.config import settings
+
+RAW_FOLDER = settings.RAW_STORAGE_PATH
+PROCESSED_FOLDER = settings.PROCESSED_STORAGE_PATH
 
 def convert_pdf_to_text(pdf_path, output_path):
     doc = fitz.open(pdf_path)

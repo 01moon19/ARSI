@@ -1,5 +1,5 @@
 from pathlib import Path
-
+from app.core.config import settings
 
 print("RAG SERVICE LOADED")
 
@@ -10,7 +10,7 @@ class DocumentService:
         from app.rag.document_ingestion.document_processor import DocumentProcessor
 
         source_path = Path(file_path)
-        processed_dir = Path("data/processed")
+        processed_dir = Path(settings.PROCESSED_STORAGE_PATH)
         processed_dir.mkdir(parents=True, exist_ok=True)
 
         processor = DocumentProcessor()
@@ -50,19 +50,74 @@ class RAGService:
             self.rag = None
             self.init_error = str(exc)
             print(f"RAG initialization failed: {self.init_error}")
+    
+    def load_existing_index(self):
 
+        from app.core.config import settings
+        from app.rag.vectorstore.vectorstore import VectorStore
+        from app.rag.graph_builder.graph_builder import GraphBuilder
+        from app.services.llm_service import get_llm
+
+        try:
+
+            vectorstore = VectorStore(
+                faiss_path=str(
+                    Path(settings.VECTOR_STORAGE_PATH) / "faiss_index"
+                )
+            )
+
+            index_file = Path(
+                settings.VECTOR_STORAGE_PATH
+            ) / "faiss_index" / "index.faiss"
+
+            if not index_file.exists():
+
+                print("⚠️ No existing FAISS index found.")
+
+                return
+
+            vectorstore.create_vectorstore(
+                documents=["startup_load"]
+            )
+
+            retriever = vectorstore.get_retriever()
+
+            llm = get_llm()
+
+            graph_builder = GraphBuilder(
+                retriever,
+                llm
+            )
+
+            graph_builder.build()
+
+            self.rag = graph_builder
+
+            self.init_error = None
+
+            print("✅ Existing FAISS index loaded.")
+
+        except Exception as exc:
+
+            self.rag = None
+
+            self.init_error = str(exc)
+
+            print(f"❌ Failed loading existing index: {exc}")
+    
     def ingest_processed_file(self, source: str, progress_callback=None):
-        from app.core.config import Config
+        from app.core.config import settings
         from app.rag.document_ingestion.document_processor import DocumentProcessor
         from app.rag.graph_builder.graph_builder import GraphBuilder
         from app.rag.vectorstore.vectorstore import VectorStore
+        from app.services.llm_service import get_llm
 
         if progress_callback is not None:
             progress_callback("loading_documents")
 
         processor = DocumentProcessor(
-            chunk_size=Config.CHUNK_SIZE,
-            chunk_overlap=Config.CHUNK_OVERLAP
+            chunk_size=settings.CHUNK_SIZE,
+            chunk_overlap=settings.CHUNK_OVERLAP
         )
         documents = processor.load_documents([source])
 
@@ -74,7 +129,9 @@ class RAGService:
         if not chunks:
             raise ValueError("No valid text extracted from uploaded document.")
 
-        vectorstore = VectorStore(faiss_path="db/faiss_index")
+        vectorstore = VectorStore(
+            faiss_path=str(Path(settings.VECTOR_STORAGE_PATH) / "faiss_index")
+        )
         index_file = Path(vectorstore.faiss_path) / "index.faiss"
 
         if progress_callback is not None:
@@ -89,7 +146,7 @@ class RAGService:
             progress_callback("saving_embeddings")
 
         retriever = vectorstore.get_retriever()
-        llm = Config.get_llm()
+        llm = get_llm()
 
         graph_builder = GraphBuilder(retriever, llm)
         graph_builder.build()
@@ -110,3 +167,6 @@ class RAGService:
             raise ValueError("RAG system is not initialized. Please ingest documents first.")
 
         return self.rag.run(question)
+
+# Shared singleton instance
+rag_service = RAGService()

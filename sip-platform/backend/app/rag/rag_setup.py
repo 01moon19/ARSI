@@ -9,14 +9,14 @@ Connects:
 - LangGraph workflow
 """
 
-from platform import processor
+from pathlib import Path
 from typing import List
 
 from app.rag.document_ingestion.document_processor import DocumentProcessor
 from app.rag.vectorstore.vectorstore import VectorStore
 from app.rag.graph_builder.graph_builder import GraphBuilder
-from app.core.config import Config
-
+from app.core.config import settings
+from app.services.llm_service import get_llm
 
 def setup_rag_system(sources: List[str]):
     """
@@ -37,8 +37,8 @@ def setup_rag_system(sources: List[str]):
     print("📄 Loading documents...")
 
     processor = DocumentProcessor(
-        chunk_size=Config.CHUNK_SIZE,
-        chunk_overlap=Config.CHUNK_OVERLAP
+        chunk_size=settings.CHUNK_SIZE,
+        chunk_overlap=settings.CHUNK_OVERLAP
     )
 
     documents = processor.load_documents(sources)
@@ -62,7 +62,13 @@ def setup_rag_system(sources: List[str]):
     # =========================
     print("🧠 Creating / Loading Vector Store...")
 
-    vectorstore = VectorStore(faiss_path="db/faiss_index")
+    faiss_index_dir = Path(settings.VECTOR_STORAGE_PATH) / "faiss_index"
+    vectorstore = VectorStore(
+        faiss_path=str(
+            faiss_index_dir 
+        )
+    )
+    
     vectorstore.create_vectorstore(chunks)
 
     retriever = vectorstore.get_retriever()
@@ -74,7 +80,7 @@ def setup_rag_system(sources: List[str]):
     # =========================
     print("🤖 Initializing LLM...")
 
-    llm = Config.get_llm()
+    llm = get_llm()
 
     print("✅ LLM ready\n")
 

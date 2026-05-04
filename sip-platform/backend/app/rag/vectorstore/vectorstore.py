@@ -6,6 +6,7 @@ import time
 from langchain_community.vectorstores import FAISS
 from langchain_google_genai import GoogleGenerativeAIEmbeddings
 from google.genai.errors import ClientError
+from app.core.config import settings
 
 from langchain_core.documents import Document
 
@@ -82,7 +83,7 @@ class BatchGoogleGenerativeAIEmbeddings(GoogleGenerativeAIEmbeddings):
 
 class VectorStore:
     """Manages vector store application"""
-    def __init__(self, faiss_path: str = "db/faiss_index"):
+    def __init__(self, faiss_path: str = settings.VECTOR_STORAGE_PATH):
         self.embedding = BatchGoogleGenerativeAIEmbeddings(
             model="models/gemini-embedding-001"
         )
