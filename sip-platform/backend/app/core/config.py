@@ -95,6 +95,11 @@ class Settings(BaseSettings):
     PROCESSED_STORAGE_PATH: str = str(BACKEND_DIR / "storage/processed")
     VECTOR_STORAGE_PATH: str = str(BACKEND_DIR / "storage/vectors")
 
+    # =========================
+    # FIREBASE (Firestore via firebase-admin)
+    # =========================
+    FIREBASE_CREDENTIALS_PATH: str | None = None
+    
     class Config:
         env_file = ".env"
 

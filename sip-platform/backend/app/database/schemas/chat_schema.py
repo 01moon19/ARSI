@@ -1,6 +1,36 @@
-from pydantic import BaseModel
+from typing import Any
+
+from pydantic import BaseModel, Field
 
 
-class ChatRequest(BaseModel):
+class ChatSessionCreate(BaseModel):
+    file_path: str = Field(
+        ...,
+        description="Path to the local file (absolute or relative); must live under storage roots.",
+    )
 
+
+class ChatSessionSummary(BaseModel):
+    session_id: str
+    file_path: str
+    created_at: str | None = None
+    updated_at: str | None = None
+
+
+class ChatMessageOut(BaseModel):
+    role: str
+    content: str
+    created_at: str | None = None
+    sources: list[Any] | None = None
+    confidence: float | None = None
+
+
+class ChatTranscriptResponse(BaseModel):
+    session_id: str
+    file_path: str
+    messages: list[ChatMessageOut]
+
+
+class ChatQueryRequest(BaseModel):
+    session_id: str
     question: str

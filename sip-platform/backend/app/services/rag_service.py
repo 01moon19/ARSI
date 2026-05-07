@@ -95,7 +95,7 @@ class RAGService:
 
             self.init_error = None
 
-            print("✅ Existing FAISS index loaded.")
+            print("[OK] Existing FAISS index loaded.")
 
         except Exception as exc:
 
@@ -103,7 +103,7 @@ class RAGService:
 
             self.init_error = str(exc)
 
-            print(f"❌ Failed loading existing index: {exc}")
+            print(f"[ERROR] Failed loading existing index: {exc}")
     
     def ingest_processed_file(self, source: str, progress_callback=None):
         from app.core.config import settings
