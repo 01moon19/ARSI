@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String
+from sqlalchemy import Boolean, Column, Integer, String
 
 from app.database.db import Base
 
@@ -13,3 +13,5 @@ class User(Base):
     password_hash = Column(String, nullable=False)
 
     role = Column(String, default="user")
+
+    is_active = Column(Boolean, default=False)
