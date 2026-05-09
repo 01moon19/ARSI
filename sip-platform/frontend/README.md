@@ -1,26 +1,16 @@
-# SIP Platform Frontend
+# React + Vite
 
-A minimal static frontend to call the backend `GET /ask` endpoint.
+This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
 
-## Run
+Currently, two official plugins are available:
 
-1. Start backend:
-   - `cd backend`
-   - `uvicorn app.main:app --reload --host 0.0.0.0 --port 8000`
+- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
+- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
 
-2. Start static server (in another terminal):
-   - `cd frontend`
-   - `python -m http.server 3000`
+## React Compiler
 
-3. Open browser:
-   - http://127.0.0.1:3000
+The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
 
-## Usage
+## Expanding the ESLint configuration
 
-- Type a question in the textarea and click "Ask".
-- Backend should be running with an initialized RAG index.
-
-## Notes
-
-- CORS already enabled for all origins in `backend/app/main.py`.
-- If using other ports, update `backendUrl` in `app.js`.
+If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.

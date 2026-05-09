@@ -19,9 +19,20 @@ build/
 dist/
 
 # Local uploaded/processed data
-data/raw/
-data/processed/
-data/uploads/
+storage/raw/
+storage/processed/
+storage/vectors/
 
 # Local vector store / index artifacts
-db/faiss_index/
+storage/faiss_index/
+
+.venv/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.db
+*.sqlite3
+*.egg-info/
+.env
+

@@ -54,6 +54,8 @@ from app.database.models.user import User
 
 from app.core.config import settings
 
+from app.integrations.firebase_client import init_firebase
+
 
 # Create database tables
 Base.metadata.create_all(bind=engine)
@@ -64,11 +66,13 @@ async def lifespan(app: FastAPI):
 
     try:
 
+        init_firebase()
         rag_service.load_existing_index()
 
     except Exception as e:
 
-        print(f"⚠️ RAG initialization failed during startup: {e}")
+         # Keep output ASCII-only (Windows consoles may default to cp1252).
+        print(f"[WARN] Startup initialization failed: {e}")
 
     yield
 
