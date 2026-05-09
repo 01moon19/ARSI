@@ -31,6 +31,7 @@ from app.services.upload_service import (
     list_uploads
 )
 
+
 router = APIRouter(
     tags=["Uploads"]
 )
@@ -54,7 +55,7 @@ def _estimate_minutes(total_documents: int):
     )
 
 
-def _process_uploaded_document(
+def   _process_uploaded_document(
     upload_id: str,
     raw_file_path: str
 ):
@@ -74,21 +75,21 @@ def _process_uploaded_document(
         )
 
         # Process PDF
-        processed_path = DocumentService.process_pdf(
-            raw_file_path
-        )
+        # processed_path = DocumentService.process_pdf(   REMOVE 
+        #     raw_file_path
+        # )
 
         update_upload(
             db,
             upload_id,
             {
-                "processed_file": processed_path
+                "processed_file": raw_file_path
             }
         )
 
         # Ingest into RAG
         ingestion_summary = rag_service.ingest_processed_file(
-            processed_path
+            raw_file_path
         )
 
         update_upload(
@@ -97,7 +98,7 @@ def _process_uploaded_document(
             {
                 "status": "completed",
                 "stage": "saved",
-                "processed_file": processed_path,
+                "processed_file": raw_file_path,
                 "documents_loaded": ingestion_summary.get(
                     "documents_loaded",
                     0
@@ -151,13 +152,6 @@ async def upload(
         suffix = Path(
             file.filename or ""
         ).suffix.lower()
-
-        if suffix != ".pdf":
-
-            raise HTTPException(
-                status_code=400,
-                detail="Only PDF uploads are supported."
-            )
 
         upload_id = str(uuid.uuid4())
 

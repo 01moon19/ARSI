@@ -175,6 +175,21 @@
 from pathlib import Path
 from app.core.config import settings
 
+from pathlib import Path
+
+from langchain.schema import Document
+
+from llama_parse import LlamaParse
+
+from llama_index.core.node_parser import (
+    MarkdownElementNodeParser,
+    SentenceSplitter
+)
+
+from llama_index.llms.google_genai import GoogleGenAI
+
+import os
+
 print("RAG SERVICE LOADED")
 
 
@@ -211,6 +226,27 @@ class RAGService:
     def __init__(self):
         self.rag = None
         self.init_error = None
+        self.semantic_splitter = SentenceSplitter(
+            chunk_size=chunk_size,
+            chunk_overlap=chunk_overlap
+        )
+
+        self.llama_parser = LlamaParse(
+            api_key=os.getenv("LLAMA_CLOUD_API_KEY"),
+            result_type="markdown",
+            parsing_instruction="""
+            Preserve tables carefully.
+            Maintain sheet and section hierarchy.
+            """
+        )
+
+        self.markdown_parser = MarkdownElementNodeParser(
+            llm=GoogleGenAI(
+                model="gemini-2.5-flash",
+                temperature=0
+            ),
+            num_workers=4
+        )
 
     def initialize(self, sources):
         from app.rag.rag_setup import setup_rag_system
@@ -279,7 +315,7 @@ class RAGService:
 
             print(f"[ERROR] Failed loading existing index: {exc}")
     
-    def ingest_processed_file(self, source: str, progress_callback=None):
+    def  ingest_processed_file(self, source: str, progress_callback=None):
         from app.core.config import settings
         from app.rag.document_ingestion.document_processor import DocumentProcessor
         from app.rag.graph_builder.graph_builder import GraphBuilder
@@ -298,7 +334,10 @@ class RAGService:
         if progress_callback is not None:
             progress_callback("splitting_and_chunking")
 
-        chunks = processor.split_documents(documents)
+        # chunks = processor.split_documents(documents)
+
+        chunks = self.process_documents_semantically(
+        [source])
 
         if not chunks:
             raise ValueError("No valid text extracted from uploaded document.")
@@ -332,6 +371,66 @@ class RAGService:
             "documents_loaded": len(documents),
             "chunks_created": len(chunks)
         }
+    
+    def process_documents_semantically(
+        self,
+        sources: list[str]
+    ):
+        from app.rag.document_ingestion.document_processor import DocumentProcessor
+        
+
+        final_documents = []
+
+        for source in sources:
+
+            path = Path(source)
+
+            suffix = path.suffix.lower()
+
+            # Use semantic parsing only for structured docs
+            if suffix in [".pdf", ".xlsx"]:
+
+                llama_docs = self.llama_parser.load_data(
+                    str(path)
+                )
+
+                nodes = self.markdown_parser.get_nodes_from_documents(
+                    llama_docs
+                )
+
+                split_nodes = self.semantic_splitter.get_nodes_from_nodes(
+                    nodes
+                )
+
+                for node in split_nodes:
+
+                    metadata = node.metadata or {}
+
+                    metadata["source"] = path.name
+                    metadata["document_type"] = suffix
+
+                    final_documents.append(
+                        Document(
+                            page_content=node.text,
+                            metadata=metadata
+                        )
+                    )
+
+            # Fallback to existing flow
+            else:
+                processor = DocumentProcessor(
+                    chunk_size=settings.CHUNK_SIZE,
+                    chunk_overlap=settings.CHUNK_OVERLAP
+                )
+
+                docs = processor.load_documents([source])
+
+                chunks = processor.split_documents(docs)
+
+                final_documents.extend(chunks)
+
+        return final_documents
+    
 
     def query(self, question: str):
         if self.init_error:

@@ -1,4 +1,6 @@
 # Environment files
+sip-platform/.venv
+
 .env
 .env.*
 
