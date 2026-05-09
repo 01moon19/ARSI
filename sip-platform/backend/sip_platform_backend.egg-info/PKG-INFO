@@ -28,5 +28,11 @@ Requires-Dist: psycopg2-binary>=2.9.12
 Requires-Dist: alembic>=1.18.4
 Requires-Dist: pydantic-settings>=2.14.0
 Requires-Dist: bcrypt==4.0.1
+Requires-Dist: firebase-admin>=7.4.0
+Requires-Dist: google-cloud-firestore>=2.27.0
+Requires-Dist: llama-index>=0.14.21
+Requires-Dist: llama-parse>=0.6.94
+Requires-Dist: llama-index-llms-google-genai>=0.9.2
+Requires-Dist: pandas>=2.3.3
 Provides-Extra: dev
 Requires-Dist: pytest>=8.0.0; extra == "dev"

@@ -16,7 +16,7 @@ def resolve_trusted_file_path(raw_path: str) -> Path:
         Path(settings.PROCESSED_STORAGE_PATH).resolve(),
         Path(settings.RAW_STORAGE_PATH).resolve(),
     ]
-
+    
     allowed = False
     for root in roots:
         try:

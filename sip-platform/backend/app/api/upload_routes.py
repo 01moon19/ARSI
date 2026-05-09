@@ -74,21 +74,21 @@ def _process_uploaded_document(
         )
 
         # Process PDF
-        processed_path = DocumentService.process_pdf(
-            raw_file_path
-        )
+        # processed_path = DocumentService.process_pdf(
+        #     raw_file_path
+        # )
 
         update_upload(
             db,
             upload_id,
             {
-                "processed_file": processed_path
+                "processed_file": raw_file_path
             }
         )
 
         # Ingest into RAG
         ingestion_summary = rag_service.ingest_processed_file(
-            processed_path
+            raw_file_path
         )
 
         update_upload(
@@ -97,7 +97,7 @@ def _process_uploaded_document(
             {
                 "status": "completed",
                 "stage": "saved",
-                "processed_file": processed_path,
+                "processed_file": raw_file_path,
                 "documents_loaded": ingestion_summary.get(
                     "documents_loaded",
                     0
@@ -152,12 +152,12 @@ async def upload(
             file.filename or ""
         ).suffix.lower()
 
-        if suffix != ".pdf":
+        # if suffix != ".pdf":
 
-            raise HTTPException(
-                status_code=400,
-                detail="Only PDF uploads are supported."
-            )
+        #     raise HTTPException(
+        #         status_code=400,
+        #         detail="Only PDF uploads are supported."
+        #     )
 
         upload_id = str(uuid.uuid4())
 

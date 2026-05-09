@@ -101,7 +101,12 @@ class Settings(BaseSettings):
     # =========================
     FIREBASE_CREDENTIALS_PATH: str | None = None
 
-    
+    # =========================
+    # Llama API Key
+    # =========================
+    LLAMA_CLOUD_API_KEY: str
+
+
     class Config:
         env_file = ".env"
 

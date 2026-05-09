@@ -45,6 +45,7 @@ from contextlib import asynccontextmanager
 from app.api.admin_routes import router as admin_router
 from app.api.auth_routes import router as auth_router
 from app.api.chat_routes import router as chat_router
+from app.api.upload_routes import router as upload_router
 
 from app.services.rag_service import rag_service
 from app.database.models.upload import Upload
@@ -89,6 +90,8 @@ app.include_router(admin_router)
 app.include_router(auth_router)
 
 app.include_router(chat_router)
+
+app.include_router(upload_router)
 
 
 @app.get("/")
