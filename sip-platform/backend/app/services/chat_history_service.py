@@ -22,7 +22,7 @@ class ChatHistoryService:
     USERS_COLLECTION = "users"
     SESSIONS_SUBCOLLECTION = "chat_sessions"
 
-    def create_session(self, owner_email: str, file_path: str) -> str:
+    def create_session(self, owner_email: str, title: str | None = None) -> str:
         db = get_firestore()
         session_id = str(uuid.uuid4())
         ref = (
@@ -34,7 +34,7 @@ class ChatHistoryService:
         ref.set(
             {
                 "owner_email": owner_email,
-                "file_path": file_path,
+                "title": title or "New Chat",
                 "created_at": fs.SERVER_TIMESTAMP,
                 "updated_at": fs.SERVER_TIMESTAMP,
             }
@@ -56,7 +56,7 @@ class ChatHistoryService:
             out.append(
                 {
                     "session_id": doc.id,
-                    "file_path": data.get("file_path", ""),
+                    "title": data.get("title", "New Chat"),
                     "created_at": _ts_to_iso(data.get("created_at")),
                     "updated_at": _ts_to_iso(data.get("updated_at")),
                 }
@@ -140,7 +140,7 @@ class ChatHistoryService:
             )
         base = {
             "session_id": session_id,
-            "file_path": session.get("file_path", ""),
+            "title": session.get("title", "New Chat"),
         }
         return base, messages
 

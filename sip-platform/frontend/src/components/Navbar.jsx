@@ -25,6 +25,13 @@ function Navbar() {
         </Link>
 
         <Link
+          to="/upload"
+          className="hover:text-gray-300 transition"
+        >
+          Upload
+        </Link>
+        
+        <Link
           to="/dashboard"
           className="hover:text-gray-300 transition"
         >

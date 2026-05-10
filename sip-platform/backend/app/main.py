@@ -46,16 +46,22 @@ from app.api.admin_routes import router as admin_router
 from app.api.auth_routes import router as auth_router
 from app.api.chat_routes import router as chat_router
 from app.api.upload_routes import router as upload_router
+from app.api.dashboard_routes import (
+    router as dashboard_router
+)
 
 from app.services.rag_service import rag_service
 from app.database.models.upload import Upload
 
+from fastapi.middleware.cors import CORSMiddleware
 from app.database.db import Base, engine
 from app.database.models.user import User
 
 from app.core.config import settings
 
 from app.integrations.firebase_client import init_firebase
+
+
 
 
 # Create database tables
@@ -83,6 +89,19 @@ app = FastAPI(
     lifespan=lifespan
 )
 
+app.add_middleware(
+    CORSMiddleware,
+
+    allow_origins=[
+        "http://localhost:5173",
+    ],
+
+    allow_credentials=True,
+
+    allow_methods=["*"],
+
+    allow_headers=["*"],
+)
 
 # Routers
 app.include_router(admin_router)
@@ -93,6 +112,15 @@ app.include_router(chat_router)
 
 app.include_router(upload_router)
 
+app.include_router(dashboard_router)
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:5173"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 @app.get("/")
 def root():

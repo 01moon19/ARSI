@@ -4,15 +4,12 @@ from pydantic import BaseModel, Field
 
 
 class ChatSessionCreate(BaseModel):
-    file_path: str = Field(
-        ...,
-        description="Path to the local file (absolute or relative); must live under storage roots.",
-    )
+    title: str
 
 
 class ChatSessionSummary(BaseModel):
     session_id: str
-    file_path: str
+    
     created_at: str | None = None
     updated_at: str | None = None
 
@@ -27,7 +24,7 @@ class ChatMessageOut(BaseModel):
 
 class ChatTranscriptResponse(BaseModel):
     session_id: str
-    file_path: str
+    
     messages: list[ChatMessageOut]
 
 

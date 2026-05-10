@@ -12,10 +12,10 @@ import Input from "../components/Input";
 import Button from "../components/Button";
 
 import {
-  loginUser,
+  registerUser,
 } from "../services/AuthService";
 
-function LoginPage() {
+function RegisterPage() {
 
   const navigate =
     useNavigate();
@@ -26,61 +26,53 @@ function LoginPage() {
   const [password, setPassword] =
     useState("");
 
+  const [message, setMessage] =
+    useState("");
+
   const [error, setError] =
     useState("");
 
-  const handleLogin =
+  const handleRegister =
     async () => {
 
       try {
 
         setError("");
+        setMessage("");
 
         const data =
-          await loginUser(
+          await registerUser({
             email,
-            password
-          );
+            password,
+          });
 
-        localStorage.setItem(
-          "token",
-          data.access_token
+        console.log(
+          "Register Success:",
+          data
         );
 
-        const payload =
-          JSON.parse(
-            atob(
-              data.access_token
-                .split(".")[1]
-            )
-          );
+        setMessage(
+          "Registration successful. Wait for admin approval."
+        );
 
-        if (
-          payload.role ===
-          "admin"
-        ) {
+        setTimeout(() => {
 
           navigate(
-            "/app/users"
+            "/login"
           );
 
-        } else {
-
-          navigate(
-            "/app/dashboard"
-          );
-        }
+        }, 2000);
 
       } catch (error) {
 
         console.error(
-          "Login Error:",
+          "Register Error:",
           error
         );
 
         setError(
           error.response?.data?.detail ||
-          "Invalid credentials"
+          "Registration failed"
         );
       }
     };
@@ -95,9 +87,19 @@ function LoginPage() {
 
           <h1 className="text-4xl font-bold mb-8 text-center">
 
-            Login
+            Register
 
           </h1>
+
+          {message && (
+
+            <div className="bg-green-100 text-green-700 px-4 py-3 rounded-xl mb-5">
+
+              {message}
+
+            </div>
+
+          )}
 
           {error && (
 
@@ -131,36 +133,29 @@ function LoginPage() {
                   e.target.value
                 )
               }
+              onKeyDown={(e) => {
+
+                if (
+                  e.key === "Enter"
+                ) {
+
+                  handleRegister();
+                }
+              }}
             />
 
             <div className="pt-2">
 
               <Button
                 onClick={
-                  handleLogin
+                  handleRegister
                 }
               >
 
-                Login
+                Register
 
               </Button>
-              
-              <p className="text-center mt-6">
 
-                Don't have an account?
-
-                <span
-                  className="ml-2 text-blue-500 cursor-pointer"
-                  onClick={() =>
-                    navigate("/register")
-                  }
-                >
-
-                  Register
-
-                </span>
-
-              </p>
             </div>
 
           </div>
@@ -173,4 +168,4 @@ function LoginPage() {
   );
 }
 
-export default LoginPage;
+export default RegisterPage;

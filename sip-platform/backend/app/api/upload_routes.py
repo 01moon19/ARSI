@@ -4,7 +4,7 @@ import os
 from pathlib import Path
 import shutil
 import uuid
-
+from app.database.models.upload import Upload
 from fastapi import (
     APIRouter,
     BackgroundTasks,
@@ -30,6 +30,7 @@ from app.services.upload_service import (
     get_upload,
     list_uploads
 )
+from fastapi.responses import FileResponse
 
 router = APIRouter(
     tags=["Uploads"]
@@ -267,3 +268,27 @@ def get_single_upload(
         )
 
     return upload
+
+@router.get("/{upload_id}/download")
+async def download_document(
+    upload_id: str,
+    db: Session = Depends(get_db),
+    current_user=Depends(get_current_user)
+):
+
+    upload = db.query(Upload).filter(
+        Upload.id == upload_id
+    ).first()
+
+    if not upload:
+
+        raise HTTPException(
+            status_code=404,
+            detail="Document not found"
+        )
+
+    return FileResponse(
+        path=upload.raw_file,
+        filename=upload.original_filename,
+        media_type="application/octet-stream"
+    )

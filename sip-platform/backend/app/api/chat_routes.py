@@ -63,14 +63,15 @@ def create_chat_session(
     body: ChatSessionCreate,
     current_user: User = Depends(get_current_user),
 ):
-    path = resolve_trusted_file_path(body.file_path)
+    
     session_id = chat_history_service.create_session(
         owner_email=current_user.email,
-        file_path=str(path),
+        title=body.title
+        
     )
     return ChatSessionSummary(
         session_id=session_id,
-        file_path=str(path),
+        title=body.title,
         created_at=None,
         updated_at=None,
     )
@@ -95,7 +96,7 @@ def get_chat_transcript(
         raise HTTPException(status_code=404, detail="Session not found.")
     return ChatTranscriptResponse(
         session_id=base["session_id"],
-        file_path=base["file_path"],
+        title=base.get("title"),
         messages=[ChatMessageOut(**m) for m in messages],
     )
 
