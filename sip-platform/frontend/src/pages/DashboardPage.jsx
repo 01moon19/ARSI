@@ -109,7 +109,7 @@ export default function DashboardPage() {
         {/* AI SUMMARY */}
 
         <section className="relative overflow-hidden rounded-[2.5rem] bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 p-10 shadow-[0_50px_120px_-60px_rgba(15,23,42,0.5)]">
-          <div className="pointer-events-none absolute inset-x-0 top-0 h-56 bg-[radial-gradient(circle_at_top,_rgba(96,165,250,0.24),_transparent_46%)]" />
+          <div className="pointer-events-none absolute inset-x-0 top-0 h-56 bg-slate-800/40" />
 
           <div className="pointer-events-none absolute right-0 top-12 h-64 w-64 rounded-full bg-sky-500/10 blur-3xl" />
 
