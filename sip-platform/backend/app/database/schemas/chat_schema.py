@@ -9,7 +9,7 @@ class ChatSessionCreate(BaseModel):
 
 class ChatSessionSummary(BaseModel):
     session_id: str
-    
+    title: str
     created_at: str | None = None
     updated_at: str | None = None
 
@@ -24,7 +24,7 @@ class ChatMessageOut(BaseModel):
 
 class ChatTranscriptResponse(BaseModel):
     session_id: str
-    
+    title: str
     messages: list[ChatMessageOut]
 
 

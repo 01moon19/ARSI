@@ -3,22 +3,54 @@ from app.services.rag_service import rag_service
 PREDEFINED_QUERIES = {
 
     "summary":
-        "Provide a concise business summary from the uploaded sales documents.",
+        """
+        Provide a concise business summary
+        in 1 short sentence only.
+        Keep the response executive-style
+        and under 60 words.
+        do not include the source of the data in the response.
+        """,
 
     "growth_opportunities":
-        "What are the major growth opportunities mentioned in the documents?",
+        """
+        Identify the biggest growth opportunities.
+        Respond in 1 concise sentence only.
+        Avoid long explanations.
+        do not include the source of the data in the response.      
+        """,
 
     "risk_analysis":
-        "What are the major business risks or challenges?",
+        """
+        Identify the key business risks.
+        Keep the response short,
+        actionable,
+        and under 50 words.
+        do not include the source of the data in the response.
+        """,
 
     "top_products":
-        "Which products or services appear to perform best?",
+        """
+        Mention the top performing products
+        or services in 1 concise sentence only.
+        do not include the source of the data in the response.
+        """,
 
     "customer_trends":
-        "What customer or market trends are visible?",
+        """
+        Summarize important customer trends
+        in 1 short sentence only.
+        do not include the source of the data in the response.
+        """,
 
     "recommendations":
-        "Provide strategic business recommendations based on the uploaded documents."
+        """
+        Provide 1 short strategic recommendations.
+        Keep the response concise
+        and executive-friendly.
+        do not include the source of the data in the response.
+        
+        """
+
 }
 
 
@@ -56,7 +88,7 @@ class BusinessInsightService:
             except Exception as e:
 
                 insights[key] = (
-                    f"Insight generation failed: {str(e)}"
+                    f"insights[key] = AI insight temporarily unavailable."
                 )
 
         return insights
