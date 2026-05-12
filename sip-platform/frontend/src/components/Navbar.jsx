@@ -18,24 +18,17 @@ function Navbar() {
         </Link>
 
         <Link
+          to="/about"
+          className="hover:text-gray-300 transition"
+        >
+          About
+        </Link>
+
+        <Link
           to="/login"
           className="hover:text-gray-300 transition"
         >
           Login
-        </Link>
-
-        <Link
-          to="/upload"
-          className="hover:text-gray-300 transition"
-        >
-          Upload
-        </Link>
-        
-        <Link
-          to="/dashboard"
-          className="hover:text-gray-300 transition"
-        >
-          Dashboard
         </Link>
       </div>
     </nav>

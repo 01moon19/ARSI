@@ -1,9 +1,11 @@
+import { useNavigate } from "react-router-dom";
 import MainLayout from "../layouts/MainLayout";
 
 import Button from "../components/Button";
 import FeatureCard from "../components/FeatureCard";
 
 function HomePage() {
+  const navigate = useNavigate();
 
   return (
 
@@ -33,19 +35,12 @@ function HomePage() {
           </p>
 
           <div className="flex gap-6">
-
-            <Button>
-
+            <Button onClick={() => navigate("/register")}>
               Get Started
-
             </Button>
-
-            <button className="border border-black px-6 py-3 rounded-lg hover:bg-black hover:text-white transition">
-
+            <button onClick={() => navigate("/about")} className="border border-black px-6 py-3 rounded-lg hover:bg-black hover:text-white transition">
               Learn More
-
             </button>
-
           </div>
 
         </section>
