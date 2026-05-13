@@ -1,23 +1,20 @@
 import UploadCard from "../components/UploadCard";
 
 function UploadPage() {
-
   return (
-
-    <div>
-
-      <div className="mb-10">
-
-        <h1 className="text-5xl font-bold mb-3">
-          Upload Center
+    <div className="w-full max-w-5xl mx-auto font-sans antialiased space-y-6">
+      
+      {/* PAGE HEADER */}
+      <div className="border-b border-[#DFE1E6] pb-5">
+        <h1 className="text-2xl font-semibold text-[#172B4D] tracking-tight">
+          Knowledge Base Administration
         </h1>
-
-        <p className="text-gray-600 text-lg">
-          Upload and manage documents for AI analysis.
+        <p className="text-[#5E6C84] text-sm mt-1">
+          Ingest, process, and manage data sources for the Sales Intelligence reasoning engine.
         </p>
-
       </div>
 
+      {/* MAIN CONTENT (Upload Zone & Document Table) */}
       <UploadCard />
 
     </div>

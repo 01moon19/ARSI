@@ -1,428 +1,286 @@
-import {
-  useEffect,
-  useState,
-} from "react";
-
-import {
-  getDashboardData,
-} from "../services/dashboardService";
+import { useEffect, useState } from "react";
+import { getDashboardData } from "../services/DashboardService";
 
 export default function DashboardPage() {
 
   const [dashboard, setDashboard] =
     useState(null);
 
-  const [loaded, setLoaded] =
-  useState(false);
-
   useEffect(() => {
 
-    if (!loaded) {
+    const cachedDashboard =
+      sessionStorage.getItem(
+        "dashboardData"
+      );
 
-      fetchDashboard();
+    if (cachedDashboard) {
 
-      setLoaded(true);
+      setDashboard(
+        JSON.parse(cachedDashboard)
+      );
+
+      return;
     }
 
-  }, [loaded]);
+    fetchDashboard();
 
-  const fetchDashboard =
-    async () => {
+  }, []);
 
-      try {
+  const fetchDashboard = async () => {
 
-        const data =
-          await getDashboardData();
+    try {
 
-        setDashboard(data);
+      const data =
+        await getDashboardData();
 
-      } catch (error) {
+      setDashboard(data);
 
-        console.error(error);
-      }
-    };
+      sessionStorage.setItem(
+        "dashboardData",
+        JSON.stringify(data)
+      );
+
+    } catch (error) {
+
+      console.error(error);
+    }
+  };
 
   if (!dashboard) {
-
     return (
-
-      <div className="space-y-6">
-
-        <div className="h-20 bg-gray-200 rounded-3xl animate-pulse" />
-
+      <div className="space-y-6 w-full max-w-[1280px] mx-auto font-sans">
+        <div className="h-20 bg-[#FAFBFC] border border-[#DFE1E6] rounded animate-pulse" />
         <div className="grid grid-cols-2 gap-6">
-
-          <div className="h-52 bg-gray-200 rounded-2xl animate-pulse" />
-
-          <div className="h-52 bg-gray-200 rounded-2xl animate-pulse" />
-
-          <div className="h-52 bg-gray-200 rounded-2xl animate-pulse" />
-
-          <div className="h-52 bg-gray-200 rounded-2xl animate-pulse" />
-
+          <div className="h-40 bg-[#FAFBFC] border border-[#DFE1E6] rounded animate-pulse" />
+          <div className="h-40 bg-[#FAFBFC] border border-[#DFE1E6] rounded animate-pulse" />
+          <div className="h-40 bg-[#FAFBFC] border border-[#DFE1E6] rounded animate-pulse" />
+          <div className="h-40 bg-[#FAFBFC] border border-[#DFE1E6] rounded animate-pulse" />
         </div>
-
       </div>
     );
   }
 
-  const insights =
-    dashboard.business_insights;
-
-  const systemAnalytics =
-    dashboard.system_analytics;
-
-  const isAdmin =
-    !!systemAnalytics;
+  const insights = dashboard.business_insights;
+  const systemAnalytics = dashboard.system_analytics;
+  const isAdmin = !!systemAnalytics;
 
   return (
-
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-slate-100 to-white px-6 py-8">
-
-      <div className="mx-auto max-w-[1520px] space-y-10">
-
-        {/* HEADER */}
-
-        <div className="space-y-3">
-
-          
-          <p className="text-sm uppercase tracking-[0.38em] text-slate-500">
-
-            AI Sales Intelligence
-
-          </p>
-          
-          <h1 className="text-5xl font-semibold tracking-tight text-slate-900">
-
-            Executive AI intelligence for sales leadership
-
-          </h1>
-
-          <p className="max-w-3xl text-lg leading-8 text-slate-600">
-
-            A modern AI-native command center that surfaces concise sales intelligence, risk signals, and strategic recommendations based on analyzed documents.
-
-          </p>
-
+    <div className="w-full max-w-[1280px] mx-auto font-sans antialiased space-y-8">
+      
+      {/* PAGE HEADER */}
+      <div className="flex flex-col gap-1 border-b border-[#DFE1E6] pb-6">
+        <div className="flex items-center gap-2 text-[#5E6C84] text-sm mb-2">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="7" height="9"></rect><rect x="14" y="3" width="7" height="5"></rect><rect x="14" y="12" width="7" height="9"></rect><rect x="3" y="16" width="7" height="5"></rect></svg>
+          <span>Dashboards / AI Sales Intelligence</span>
         </div>
+        <h1 className="text-2xl font-semibold text-[#172B4D] tracking-tight">
+          Executive Command Center
+        </h1>
+        <p className="text-[#5E6C84] text-sm">
+          A dynamic workspace surfacing concise sales intelligence, risk signals, and strategic recommendations derived from ingested data.
+        </p>
+      </div>
 
-        {/* AI SUMMARY */}
-
-        <section className="relative overflow-hidden rounded-[2.5rem] bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 p-10 shadow-[0_50px_120px_-60px_rgba(15,23,42,0.5)]">
-          <div className="pointer-events-none absolute inset-x-0 top-0 h-56 bg-slate-800/40" />
-
-          <div className="pointer-events-none absolute right-0 top-12 h-64 w-64 rounded-full bg-sky-500/10 blur-3xl" />
-
-          <div className="pointer-events-none absolute left-8 bottom-10 h-44 w-44 rounded-full bg-violet-400/10 blur-3xl" />
-
-          <div className="relative space-y-8">
-
-            <p className="text-sm uppercase tracking-[0.35em] text-slate-300 mb-6">
-
-              AI BUSINESS SUMMARY
-
-            </p>
-
-            <h2 className="text-3xl font-semibold leading-relaxed text-slate-100 max-w-5xl">
-
-              {insights.summary}
-
-            </h2>
-
-          </div>
-
-        </section>
-
-        {/* INSIGHTS GRID */}
-
-        <div className="grid gap-6 sm:grid-cols-2">
-
-          <InsightCard
-            title="Growth Opportunities"
-            content={insights.growth_opportunities}
-            icon="🚀"
-            source="Market intelligence"
-            tag="Growth signal"
-          />
-
-          <InsightCard
-            title="Risk Analysis"
-            content={
-              insights.risk_analysis
-            }
-            icon="⚠️"
-            source="Risk assessment"
-            tag="Risk indicator"
-          />
-
-          <InsightCard
-            title="Top Products"
-            content={
-              insights.top_products
-            }
-            icon="🏆"
-            source="Sales performance"
-            tag="Top performer"
-          />
-
-          <InsightCard
-            title="Customer Trends"
-            content={
-              insights.customer_trends
-            }
-            icon="📈"
-            source="Customer behavior"
-            tag="Trend indicator"
-          />
-
+      {/* AI BUSINESS SUMMARY (Jira Info Banner Style) */}
+      <section className="bg-[#E6EFFC] border border-[#B3D4FF] rounded-md p-6 flex gap-4 items-start shadow-sm">
+        <div className="mt-1 text-[#0052CC] shrink-0">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
         </div>
-
-        {/* AI RECOMMENDATIONS */}
-
-        <div className="rounded-[2rem] border border-slate-200/70 bg-white/85 p-7 shadow-[0_24px_80px_-40px_rgba(15,23,42,0.2)]">
-
-          <h2 className="text-sm uppercase tracking-[0.35em] text-slate-500">
-
-            AI Recommendations
-
+        <div>
+          <h2 className="text-[11px] font-bold text-[#0052CC] uppercase tracking-wider mb-2">
+            AI Executive Summary
           </h2>
-
-          <p className="mt-3 text-3xl font-semibold text-slate-900">
-
-            {insights.recommendations}
-
+          <p className="text-base text-[#172B4D] leading-relaxed font-medium">
+            {insights.summary}
           </p>
-
         </div>
+      </section>
 
-        {/* ADMIN ONLY */}
+      {/* INSIGHTS GRID */}
+      <div className="grid gap-6 sm:grid-cols-2">
+        <InsightCard
+          title="Growth Opportunities"
+          content={insights.growth_opportunities}
+          icon={
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline><polyline points="17 6 23 6 23 12"></polyline></svg>
+          }
+          iconColor="text-[#006644]"
+          iconBg="bg-[#E3FCEF]"
+          source="Market intelligence"
+          tag="Growth Signal"
+        />
 
-        <section className="rounded-[2rem] border border-slate-200/70 bg-white/90 p-8 shadow-[0_30px_70px_-30px_rgba(15,23,42,0.25)]">    
-          {isAdmin && (
+        <InsightCard
+          title="Risk Analysis"
+          content={insights.risk_analysis}
+          icon={
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+          }
+          iconColor="text-[#BF2600]"
+          iconBg="bg-[#FFEBE6]"
+          source="Risk assessment"
+          tag="Risk Indicator"
+        />
 
-            <>
+        <InsightCard
+          title="Top Products"
+          content={insights.top_products}
+          icon={
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
+          }
+          iconColor="text-[#FF8B00]"
+          iconBg="bg-[#FFFAE6]"
+          source="Sales performance"
+          tag="Top Performer"
+        />
 
-              {/* SYSTEM ANALYTICS */}
-
-              <div>
-
-                <h2 className="text-3xl font-bold mb-6">
-
-                  System Analytics
-
-                </h2>
-
-                <div className="grid grid-cols-5 gap-6">
-
-                  <StatCard
-                    title="Documents"
-                    value={
-                      systemAnalytics.total_documents
-                    }
-                  />
-
-                  <StatCard
-                    title="Users"
-                    value={
-                      systemAnalytics.total_users
-                    }
-                  />
-
-                  <StatCard
-                    title="Processed"
-                    value={
-                      systemAnalytics.processed_documents
-                    }
-                  />
-
-                  <StatCard
-                    title="Failed"
-                    value={
-                      systemAnalytics.failed_documents
-                    }
-                  />
-
-                  <StatCard
-                    title="Processing"
-                    value={
-                      systemAnalytics.processing_documents
-                    }
-                  />
-
-                </div>
-
-              </div>
-
-              {/* RECENT UPLOADS */}
-
-              <div className="bg-white rounded-2xl p-6 shadow-md">
-
-                <h2 className="text-2xl font-bold mb-6">
-
-                  Recent Uploads
-
-                </h2>
-
-                <table className="w-full">
-
-                  <thead>
-
-                    <tr className="border-b text-left">
-
-                      <th className="py-3">
-                        Document
-                      </th>
-
-                      <th>Status</th>
-
-                      <th>Chunks</th>
-
-                      <th>Uploaded</th>
-
-                    </tr>
-
-                  </thead>
-
-                  <tbody>
-
-                    {systemAnalytics.recent_uploads.map(
-                      (upload) => (
-
-                        <tr
-                          key={upload.id}
-                          className="border-b"
-                        >
-
-                          <td className="py-4">
-
-                            {upload.filename}
-
-                          </td>
-
-                          <td>
-
-                            <span className="bg-gray-100 px-3 py-1 rounded-full text-sm capitalize">
-
-                              {upload.status}
-
-                            </span>
-
-                          </td>
-
-                          <td>
-
-                            {upload.chunks}
-
-                          </td>
-
-                          <td>
-
-                            {new Date(
-                              upload.uploaded_at
-                            ).toLocaleDateString()}
-
-                          </td>
-
-                        </tr>
-                      )
-                    )}
-
-                  </tbody>
-
-                </table>
-
-              </div>
-
-            </>
-
-          )}
-
-        </section>
+        <InsightCard
+          title="Customer Trends"
+          content={insights.customer_trends}
+          icon={
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+          }
+          iconColor="text-[#0052CC]"
+          iconBg="bg-[#DEEBFF]"
+          source="Customer behavior"
+          tag="Trend Indicator"
+        />
       </div>
-    </div>
-  );
-}
 
-function InsightCard({
-  icon,
-  title,
-  content,
-  source,
-  tag,
-}) {
+      {/* AI RECOMMENDATIONS */}
+      <div className="bg-[#FFFFFF] border border-[#DFE1E6] rounded shadow-sm p-6 border-l-4 border-l-[#36B37E]">
+        <h2 className="text-[11px] font-bold text-[#5E6C84] uppercase tracking-wider mb-2">
+          Strategic Recommendations
+        </h2>
+        <p className="text-[#172B4D] text-base leading-relaxed font-medium">
+          {insights.recommendations}
+        </p>
+      </div>
 
-  return (
-
-    <div className="group rounded-[2rem] border border-slate-200/50 bg-white/85 p-6 shadow-[0_18px_40px_rgba(15,23,42,0.08)] transition-transform duration-300 hover:-translate-y-1 hover:shadow-[0_24px_60px_rgba(15,23,42,0.12)]">
-
-      <div className="flex items-center justify-between">
-
-        <div className="flex items-center gap-3">
-
-          <span className="inline-flex h-12 w-12 items-center justify-center rounded-3xl bg-slate-900/5 text-2xl">
-
-            {icon}
-
-          </span>
-
+      {/* ADMIN ONLY SECTION */}
+      {isAdmin && (
+        <section className="space-y-8 pt-8 border-t border-[#DFE1E6]">
+          
+          {/* SYSTEM ANALYTICS */}
           <div>
-
-            <h3 className="text-xl font-semibold text-slate-900">
-
-              {title}
-
-            </h3>
-
-            <p className="text-sm text-slate-500">
-
-              {tag}
-
-            </p>
-
+            <h2 className="text-xl font-semibold text-[#172B4D] mb-4">
+              System Analytics
+            </h2>
+            <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
+              <StatCard title="Total Documents" value={systemAnalytics.total_documents} />
+              <StatCard title="Active Users" value={systemAnalytics.total_users} />
+              <StatCard title="Processed Docs" value={systemAnalytics.processed_documents} />
+              <StatCard title="Failed Ingestions" value={systemAnalytics.failed_documents} alert={systemAnalytics.failed_documents > 0} />
+              <StatCard title="Processing Queue" value={systemAnalytics.processing_documents} />
+            </div>
           </div>
 
-        </div>
-
-      </div>
-
-      <p className="mt-5 text-slate-700 leading-7">
-
-        {content}
-
-      </p>
-
-      <p className="mt-4 text-xs uppercase tracking-[0.24em] text-slate-400">
-
-        {source}
-
-      </p>
-
+          {/* RECENT UPLOADS TABLE */}
+          <div className="bg-[#FFFFFF] border border-[#DFE1E6] rounded shadow-sm overflow-hidden">
+            <div className="px-5 py-4 border-b border-[#DFE1E6] bg-[#FAFBFC]">
+              <h2 className="text-[#172B4D] text-base font-semibold">
+                Recent Ingestion Activity
+              </h2>
+            </div>
+            
+            <div className="overflow-x-auto">
+              <table className="w-full text-left border-collapse">
+                <thead>
+                  <tr className="border-b border-[#DFE1E6] bg-[#FFFFFF]">
+                    <th className="px-5 py-3 text-[11px] font-bold text-[#5E6C84] uppercase tracking-wider">Document Name</th>
+                    <th className="px-5 py-3 text-[11px] font-bold text-[#5E6C84] uppercase tracking-wider">Status</th>
+                    <th className="px-5 py-3 text-[11px] font-bold text-[#5E6C84] uppercase tracking-wider">Vector Chunks</th>
+                    <th className="px-5 py-3 text-[11px] font-bold text-[#5E6C84] uppercase tracking-wider text-right">Upload Date</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-[#DFE1E6]">
+                  {systemAnalytics.recent_uploads.map((upload) => (
+                    <tr key={upload.id} className="hover:bg-[#FAFBFC] transition-colors group">
+                      <td className="px-5 py-3 text-sm font-medium text-[#0052CC] cursor-pointer hover:underline">
+                        {upload.filename}
+                      </td>
+                      <td className="px-5 py-3">
+                        {upload.status === "completed" && (
+                           <span className="inline-flex items-center px-2 py-0.5 rounded text-[11px] font-bold uppercase tracking-wider bg-[#E3FCEF] text-[#006644]">
+                             Completed
+                           </span>
+                        )}
+                        {upload.status === "processing" && (
+                           <span className="inline-flex items-center px-2 py-0.5 rounded text-[11px] font-bold uppercase tracking-wider bg-[#DEEBFF] text-[#0747A6]">
+                             Processing
+                           </span>
+                        )}
+                        {upload.status === "failed" && (
+                           <span className="inline-flex items-center px-2 py-0.5 rounded text-[11px] font-bold uppercase tracking-wider bg-[#FFEBE6] text-[#BF2600]">
+                             Failed
+                           </span>
+                        )}
+                      </td>
+                      <td className="px-5 py-3 text-sm text-[#172B4D]">
+                        {upload.chunks}
+                      </td>
+                      <td className="px-5 py-3 text-sm text-[#5E6C84] text-right">
+                        {new Date(upload.uploaded_at).toLocaleDateString()}
+                      </td>
+                    </tr>
+                  ))}
+                  {systemAnalytics.recent_uploads.length === 0 && (
+                    <tr>
+                      <td colSpan="4" className="px-5 py-8 text-center text-[#5E6C84] text-sm">
+                        No recent upload activity found.
+                      </td>
+                    </tr>
+                  )}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+      )}
     </div>
   );
 }
 
-function StatCard({
-  title,
-  value,
-}) {
+// Reusable Sub-components
 
+function InsightCard({ icon, iconColor, iconBg, title, content, source, tag }) {
   return (
-
-    <div className="rounded-3xl border border-slate-200/60 bg-white/90 p-5 shadow-sm">
-
-      <p className="text-sm text-slate-500">
-
-        {title}
-
+    <div className="bg-[#FFFFFF] border border-[#DFE1E6] rounded shadow-sm p-5 hover:shadow-md transition-shadow">
+      <div className="flex items-center justify-between mb-3">
+        <div className="flex items-center gap-3">
+          <div className={`w-8 h-8 rounded flex items-center justify-center ${iconBg} ${iconColor}`}>
+            {icon}
+          </div>
+          <div>
+            <h3 className="text-[#172B4D] font-semibold text-base leading-tight">
+              {title}
+            </h3>
+            <p className="text-[11px] font-bold text-[#5E6C84] uppercase tracking-wider mt-0.5">
+              {tag}
+            </p>
+          </div>
+        </div>
+      </div>
+      <p className="text-[#172B4D] text-sm leading-relaxed mb-4">
+        {content}
       </p>
-
-      <p className="mt-4 text-3xl font-semibold text-slate-900">
-
-        {value}
-
-      </p>
-
+      <div className="text-xs text-[#5E6C84] flex items-center gap-1.5 border-t border-[#DFE1E6] pt-3">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+        Source: {source}
+      </div>
     </div>
   );
 }
 
+function StatCard({ title, value, alert = false }) {
+  return (
+    <div className={`bg-[#FFFFFF] border rounded p-4 shadow-sm flex flex-col justify-center ${alert ? 'border-[#DE350B]' : 'border-[#DFE1E6]'}`}>
+      <p className="text-[11px] font-bold text-[#5E6C84] uppercase tracking-wider mb-1 truncate">
+        {title}
+      </p>
+      <p className={`text-2xl font-semibold ${alert ? 'text-[#DE350B]' : 'text-[#172B4D]'}`}>
+        {value}
+      </p>
+    </div>
+  );
+}
